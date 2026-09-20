@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import Home from './app/page';
-import './app/globals.css';
+import Terra from './components/terra';
+import './app/terra.css';
 
-createRoot(document.getElementById('root')!).render(<Home />);
+createRoot(document.getElementById('root')!).render(<Terra />);

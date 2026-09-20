@@ -1,6 +1,6 @@
-# Terra · 四叉树地球
+# Terra
 
-An educational cube-sphere globe built with Three.js, React and Sites/Vinext.
+A satellite globe built with Three.js and React. The public site shows only the interactive planet and imagery credits. The local development app retains the quadtree inspector.
 
 **Live demo:** https://popsoda2002.github.io/terra/
 
@@ -10,13 +10,15 @@ Use Node 22.13+ and pnpm. `pnpm dev` starts the local preview; `pnpm build` make
 
 ## GitHub Pages
 
-`pnpm build:pages` builds the same React app as a static site in `dist/pages`, with the `/terra/` base path. `pnpm preview:pages` serves that production build locally. Source lives on `main`; the compiled website lives on `gh-pages`. In repository Settings → Pages, use **Deploy from a branch → gh-pages → / (root)**. No server or paid hosting is needed.
+`pnpm build:pages` builds the minimal public app (`components/terra.tsx`) as a static site in `dist/pages`, with the `/terra/` base path. `pnpm preview:pages` serves that production build locally. Source lives on `main`; the compiled website lives on `gh-pages`. In repository Settings → Pages, use **Deploy from a branch → gh-pages → / (root)**. No server or paid hosting is needed.
 
 After testing a change, commit and push its source to `main`, then run `npm run deploy:pages`. This builds the site and updates `gh-pages` with a normal Git push; it requires repository write access but no workflow permission. The script uses a temporary checkout and preserves existing deployment history. GitHub Pages publishes the branch automatically after each deployment push.
 
-The public site opens with EOX imagery. To use MapTiler HD, enter your own key in the page; localhost session storage does not carry over to the published site. For a domain-restricted key, allow `https://popsoda2002.github.io` in MapTiler. Keys are never part of the repository, build, or GitHub Actions secrets.
+New visitors see EOX imagery without any setup. The public app also restores an existing MapTiler key from this tab's session, if present, and falls back to EOX when unavailable. It has no key form, controls, tile inspection, grids, or debug panels. Localhost session storage does not carry over to the published site. Keys are never part of the repository or build.
 
 ## Interaction
+
+On the public site, drag or use arrow keys to rotate; scroll, pinch, or press +/− to zoom. The planet fits both landscape and portrait screens. The following extra controls belong to the local development app only.
 
 Drag or use arrow keys to orbit. Scroll, pinch, press +/− or use the altitude slider to zoom. Click the globe to inspect a tile. Toggle satellite imagery / LOD colors. Tile density is selected automatically as you zoom. Altitude is limited to 0.5–24,000 km; the tree is capped at L17. The Beijing button flies to 1 km with MapTiler or 8 km with EOX. Rotation and zoom slow near the surface.
 
