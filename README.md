@@ -14,7 +14,9 @@ Use Node 22.13+ and pnpm. `pnpm dev` starts the local preview; `pnpm build` make
 
 After testing a change, commit and push its source to `main`, then run `npm run deploy:pages`. This builds the site and updates `gh-pages` with a normal Git push; it requires repository write access but no workflow permission. The script uses a temporary checkout and preserves existing deployment history. GitHub Pages publishes the branch automatically after each deployment push.
 
-New visitors see EOX imagery without any setup. The public app also restores an existing MapTiler key from this tab's session, if present, and falls back to EOX when unavailable. It has no key form, controls, tile inspection, grids, or debug panels. Localhost session storage does not carry over to the published site. Keys are never part of the repository or build.
+The public site connects to MapTiler automatically for every visitor, with EOX as the loading/error fallback. Copy `.env.production.example` to the ignored `.env.production.local` and set `VITE_MAPTILER_KEY` before building. The Pages build fails when that setting is missing, avoiding an accidental release without HD. The public app has no key form, controls, tile inspection, grids, or debug panels.
+
+MapTiler browser API keys are read-only and visible in the website's built JavaScript and network requests. The configured value is not committed to the source branch; the deployed `gh-pages` files intentionally include it. Requests count toward the owner's MapTiler quota. Protect a production key using **Allowed HTTP origins → popsoda2002.github.io** in MapTiler; preserve local development origins if the same key is used locally. See [MapTiler's key protection guide](https://docs.maptiler.com/guides/maps-apis/maps-platform/how-to-protect-your-map-key/). Session storage is only used as a fallback in development without a configured build key.
 
 ## Interaction
 
@@ -40,7 +42,7 @@ Natural Earth land data, redistributed by world-atlas 2.0.2 (https://github.com/
 
 ### Optional MapTiler layer
 
-Create your own Free account at https://cloud.maptiler.com/ and copy an API key from **API keys**. Paste it into **高清卫星影像 → 启用高清** in the app. No payment or account creation is performed by this app. The key is held in tab-scoped `sessionStorage` and sent only to MapTiler; **切回 EOX / 移除 key** removes it. It is never included in source, server logs, or WebMCP state. For a restricted key, allow the preview origin `http://localhost:3001` in MapTiler's settings.
+Create your own Free account at https://cloud.maptiler.com/ and copy an API key from **API keys**. For the public site, supply it through the build configuration above. The local debug app also supports **高清卫星影像 → 启用高清**, which saves a key in tab-scoped `sessionStorage`; **切回 EOX / 移除 key** removes that session value. No payment or account creation is performed by this app. For a restricted key, allow the preview origin `http://localhost:3001` in MapTiler's settings.
 
 `lib/maptiler-tiles.mjs` reads the Satellite TileJSON (current `satellite-v4`, with `satellite-v2` fallback only on 404), validates the tile host, and plans XYZ mosaics. `lib/satellite.js` shares compressed XYZ responses in a 128-entry memory cache and builds Mercator textures. The renderer computes local UVs in double precision to retain detail at close zoom. Up to L16 image patches replace their ancestors; EOX remains visible while loading and supplies polar coverage beyond Web Mercator's ±85.05° limit. Auth/quota errors pause new MapTiler work; reconnect or use EOX to recover.
 

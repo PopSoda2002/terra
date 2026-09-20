@@ -29,11 +29,14 @@ export default function Terra() {
           { presentation: true },
         );
 
-        // Reuse this tab's existing imagery session without exposing setup UI.
-        let key = '';
-        try {
-          key = sessionStorage.getItem('terra.maptilerKey') || '';
-        } catch {}
+        // This read-only browser key is intentionally included in the public
+        // build, so every visitor gets HD without a per-tab setup step.
+        let key = import.meta.env.VITE_MAPTILER_KEY?.trim() || '';
+        if (!key) {
+          try {
+            key = sessionStorage.getItem('terra.maptilerKey') || '';
+          } catch {}
+        }
         if (key) {
           globe
             .enableMapTiler(key)
@@ -41,7 +44,7 @@ export default function Terra() {
               if (!stopped) setHdEnabled(true);
             })
             .catch(() => {
-              /* EOX remains available if the saved key expires. */
+              /* EOX remains available if MapTiler cannot be reached. */
             });
         }
       })
